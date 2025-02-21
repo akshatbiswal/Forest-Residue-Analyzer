@@ -30,7 +30,7 @@ jobs:
         env:
           _R_CHECK_FORCE_SUGGESTS_: false  # Skip suggested packages
 
-      name: Validate data
+      -  name: Validate data
         run: Rscript scripts/processing/validate_data.R
 
       - name: Process and analyze
