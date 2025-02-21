@@ -1,0 +1,15 @@
+# Data
+/data/raw/*
+/data/processed/*
+/outputs/*
+
+# Secrets
+*.env
+*.Rhistory
+
+# Database
+/db/
+
+# IDE
+.Rproj.user
+.vscode/
