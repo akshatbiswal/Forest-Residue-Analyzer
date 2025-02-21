@@ -4,25 +4,40 @@ on: [push]
 jobs:
   process-data:
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # Prevent infinite hangs
+    timeout-minutes: 20  # Increased timeout
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y r-base-dev libmysqlclient-dev libssl-dev
+          sudo apt-get install -y \
+            r-base-dev \
+            libmysqlclient-dev \
+            libssl-dev \
+            libcurl4-openssl-dev  # Needed for some R packages
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true  # Use RStudio Package Manager for binaries
+          use-public-rspm: true  # Use precompiled binaries
 
       - name: Install R packages
         run: |
+          Rscript -e "install.packages('remotes', Ncpus = 2)"
           Rscript requirements.R
-        shell: bash
         env:
-          R_REMOTES_NO_ERRORS_FROM_WARNINGS: true  # Suppress warnings as errors
+          _R_CHECK_FORCE_SUGGESTS_: false  # Skip suggested packages
 
-      # ... rest of your steps ...
+      name: Validate data
+        run: Rscript scripts/processing/validate_data.R
+
+      - name: Process and analyze
+        run: Rscript scripts/analysis/pyrolysis_quality.R
+
+      - name: Upload visualizations
+        uses: actions/upload-artifact@v4  # Valid version
+        with:
+          name: plots
+          path: outputs/visualizations/*.png

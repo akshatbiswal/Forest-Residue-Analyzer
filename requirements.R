@@ -1,19 +1,17 @@
-# Set a CRAN mirror for faster downloads
-options(repos = c(CRAN = "https://cloud.r-project.org"))
+# Use a fast CRAN mirror
+options(repos = c(CRAN = "https://cran.rstudio.com"))
 
-# Install pacman if missing
-if (!requireNamespace("pacman", quietly = TRUE)) {
-  install.packages("pacman", Ncpus = 4)  # Use parallel compilation
-}
-
-# Install packages with binary versions (avoids compilation)
-pacman::p_load(
-  tidyverse,
-  DBI,
-  RMySQL,
-  plumber,
-  ggplot2,
-  pointblank,
-  install = TRUE,
-  Ncpus = 4  # Speed up via parallel installs
+# Install critical packages one by one with error handling
+packages <- c(
+  "tidyverse",  # dplyr, ggplot2, etc.
+  "DBI",
+  "RMySQL",
+  "plumber",
+  "pointblank"
 )
+
+for (pkg in packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg, Ncpus = 2, quiet = TRUE)
+  }
+}
