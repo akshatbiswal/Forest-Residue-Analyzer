@@ -24,7 +24,7 @@ jobs:
         run: Rscript scripts/analysis/pyrolysis_quality.R
 
       - name: Upload visualizations
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: plots
           path: outputs/visualizations/*.png
