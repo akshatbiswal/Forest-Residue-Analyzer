@@ -1,17 +1,26 @@
-# Use a fast CRAN mirror
-options(repos = c(CRAN = "https://cran.rstudio.com"))
+# Use RStudio Package Manager for binaries
+options(repos = c(RSPM = "https://packagemanager.posit.co/all/__linux__/jammy/latest"))
 
-# Install critical packages one by one with error handling
-packages <- c(
-  "tidyverse",  # dplyr, ggplot2, etc.
-  "DBI",
-  "RMySQL",
-  "plumber",
-  "pointblank"
+# Minimal required packages
+essential_packages <- c(
+  "tidyverse/ggplot2",     # Core visualization
+  "tidyverse/dplyr",       # Data manipulation
+  "r-dbi/DBI",             # Database interface
+  "r-dbi/RMySQL",          # MySQL connector
+  "tidyverse/readr",       # CSV I/O
+  "rstudio/plumber"        # API framework
 )
 
-for (pkg in packages) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    install.packages(pkg, Ncpus = 2, quiet = TRUE)
-  }
-}
+# Install using binary-first approach
+install.packages(
+  c("remotes", "pak"),  # Modern package manager
+  Ncpus = 4,
+  dependencies = c("Depends", "Imports")
+)
+
+remotes::install_github(
+  essential_packages,
+  dependencies = FALSE,  # Avoid recursive installs
+  upgrade = "never",
+  Ncpus = 4
+)
